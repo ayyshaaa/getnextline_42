@@ -1,9 +1,10 @@
 CC = cc
-CFLAGS = -Wall -Werror -Wextra -ggdb
-SRCS = get_next_line.c /
-get_next_line-utils.c
+CFLAGS = -Wall -Werror -Wextra -ggdb -Igetnextline
+SRCS = get_next_line.c \
+get_next_line_utils.c
 OBJS = $(SRCS:.c=.o)
 NAME = libgetnextline.a
+AR = ar rcs
 
 all: $(NAME)
 
