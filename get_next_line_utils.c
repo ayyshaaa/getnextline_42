@@ -6,7 +6,7 @@
 /*   By: aistierl <aistierl@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/21 16:22:43 by aistierl          #+#    #+#             */
-/*   Updated: 2024/06/26 18:00:48 by aistierl         ###   ########.fr       */
+/*   Updated: 2024/06/27 19:03:41 by aistierl         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,6 +91,8 @@ char	*ft_extract_dup(char *str, int limit)
 	char	*dest;
 	int		i;
 
+	if (!str)
+		return (NULL);
 	dest = malloc(limit + 2);
 	if (dest == NULL)
 	{
@@ -98,12 +100,13 @@ char	*ft_extract_dup(char *str, int limit)
 		return (NULL);
 	}
 	i = 0;
-	while (i <= limit)
+	while (i < limit)
 	{
 		dest[i] = str[i];
 		i++;
 	}
-	dest[i] = '\0';
+	dest[i] = '\n';
+	dest[++i] = '\0';
 	return (dest);
 }
 
