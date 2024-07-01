@@ -6,7 +6,7 @@
 /*   By: aistierl <aistierl@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/21 16:22:43 by aistierl          #+#    #+#             */
-/*   Updated: 2024/06/27 19:03:41 by aistierl         ###   ########.fr       */
+/*   Updated: 2024/07/01 19:58:20 by aistierl         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@ size_t	ft_strlen(const char *str)
 	int	i;
 
 	i = 0;
-	while (str[i] != '\0')
+	while (str && str[i] != '\0')
 		i++;
 	return (i);
 }
@@ -34,13 +34,13 @@ char	*ft_strjoin(const char *s1, const char *s2)
 	else
 	{
 		i = 0;
-		while (s1[i] != '\0')
+		while (s1 && s1[i] != '\0')
 		{
 			new[i] = s1[i];
 			i++;
 		}
 		j = 0;
-		while (s2[j] != '\0')
+		while (s2 && s2[j] != '\0')
 		{
 			new[i + j] = s2[j];
 			j++;
@@ -50,63 +50,25 @@ char	*ft_strjoin(const char *s1, const char *s2)
 	}
 }
 
-char	*ft_substr(const char *s, unsigned int start, size_t len)
+char	*ft_strchr(const char *s, int c)
 {
-	char				*sub;
-	unsigned int		i;
+	unsigned int	i;
+	char			*result;
+	int				character;
 
-	if (ft_strlen(s) < start || len == 0)
-		return (ft_strdup(s + ft_strlen(s)));
-	if ((ft_strlen(s) - 1) == start || ft_strlen(s + start) < len)
-		return (ft_strdup(s + start));
-	sub = malloc(len + 1);
-	if (sub == NULL)
-		return (NULL);
-	i = 0;
-	while (i < len)
+	result = (char *)s;
+	character = c % 256;
+	if (character == '\0')
+		return (result + ft_strlen(s));
+	else
 	{
-		sub[i] = s[start];
-		i++;
-		start++;
-	}
-	sub[i] = '\0';
-	return (sub);
-}
-int	ft_check_newline(char *str, int len)
-{
-	int	i;
-
-	i = 0;
-	while (i < len)
-	{
-		if (str[i] == '\n')
-			return (i);
-		i++;
-	}
-	return (-1);
-}
-
-char	*ft_extract_dup(char *str, int limit)
-{
-	char	*dest;
-	int		i;
-
-	if (!str)
-		return (NULL);
-	dest = malloc(limit + 2);
-	if (dest == NULL)
-	{
-		free (dest);
+		i = 0;
+		while (i < ft_strlen(s))
+		{
+			if (result[i] == character)
+				return (result + i);
+			i++;
+		}
 		return (NULL);
 	}
-	i = 0;
-	while (i < limit)
-	{
-		dest[i] = str[i];
-		i++;
-	}
-	dest[i] = '\n';
-	dest[++i] = '\0';
-	return (dest);
 }
-

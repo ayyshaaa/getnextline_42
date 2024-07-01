@@ -5,66 +5,18 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: aistierl <aistierl@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/06/21 16:22:34 by aistierl          #+#    #+#             */
-/*   Updated: 2024/06/27 19:03:38 by aistierl         ###   ########.fr       */
+/*   Created: 2024/06/28 16:59:20 by aistierl          #+#    #+#             */
+/*   Updated: 2024/07/01 19:58:12 by aistierl         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
 
-char	*ft_strdup(const char *s)
+char	*ft_read_concat(int fd, char *buffer, char *line)
 {
-	char	*dest;
-	int		i;
+	char	*temp;
+	int		read_value;
 
-	dest = malloc(ft_strlen(s) + 1);
-	if (dest == NULL)
-		return (NULL);
-	i = 0;
-	while (s[i] != '\0')
-	{
-		dest[i] = s[i];
-		i++;
-	}
-	dest[i] = '\0';
-	return (dest);
-}
-
-char	*get_next_line(int fd)
-{
-	char		*buffer;
-	static char	*stash;
-	char		*line;
-	int			read_value;
-	int			index_nextline;
-
-	if (fd < 0 || BUFFER_SIZE <= 0 || read(fd, &buffer, 0) < 0)
-		return (NULL);
-	// line = ft_strdup("");
-	// if (line == NULL)
-	// {
-	// 	free(line);
-	// 	return (NULL);
-	// }
-	// if (stash != NULL)
-	// {
-	// 	temp = ft_strjoin(line, buffer);
-	// 	free(line);
-	// 	line = temp;
-	// 	if (line == NULL)
-	// 	{
-	// 		free(stash);
-	// 		stash = NULL;
-	// 		free(line);
-	// 		return (NULL);
-	// 	}
-	// }
-	buffer = malloc(BUFFER_SIZE + 1);
-	if (!buffer)
-	{
-		free(buffer);
-		return (NULL);
-	}
 	read_value = 1;
 	while (read_value > 0)
 	{
@@ -72,30 +24,116 @@ char	*get_next_line(int fd)
 		if (read_value < 0)
 		{
 			free(buffer);
+			free(line);
 			return (NULL);
 		}
-		buffer[BUFFER_SIZE] = '\0';
+		buffer[read_value] = '\0';
 		if (read_value == 0)
 			break ;
 		temp = ft_strjoin(line, buffer);
+		if (!temp)
+		{
+			free(line);
+			free(buffer);
+			return (NULL);
+		}
 		free(line);
 		line = temp;
-		if (ft_check_newline(line, ft_strlen(line) >= 0);
+		if (ft_strchr(line, 10))
 			break ;
 	}
-	if (!line[0])
+	return (line);
+}
+
+char	*ft_left(char *line)
+{
+	char			*str;
+	unsigned int	i;
+	unsigned int	j;
+
+	i = 0;
+	while (line && line[i] != '\n' && line[i] != '\0')
+		i++;
+	if (!line || line[i] == '\0')
+		return (NULL);
+	i++;
+	str = malloc(ft_strlen(line) - i + 1);
+	if (!str)
+		return (NULL);
+	j = 0;
+	while (line && line[i + j] != '\0')
 	{
-		free(line);
+		str[j] = line[i + j];
+		j++;
+	}
+	str[j] = '\0';
+	return (str);
+}
+
+char	*ft_extract(char *line)
+{
+	char	*cropped;
+	int		i;
+
+	if (!line)
+		return (NULL);
+	i = 0;
+	while (line[i] != '\n' && line[i] != '\0')
+		i++;
+	cropped = malloc(i + 2);
+	if (cropped == NULL)
+		return (NULL);
+	i = 0;
+	while (line[i] != '\n' && line[i] != '\0')
+	{
+		cropped[i] = line[i];
+		i++;
+	}
+	if (line[i] == '\n')
+	{
+		cropped[i] = '\n';
+		i++;
+	}
+	cropped[i] = '\0';
+	return (cropped);
+}
+
+char	*get_next_line(int fd)
+{
+	char		*buffer;
+	char		*line;
+	static char	*stash;
+
+	if (fd < 0 || BUFFER_SIZE <= 0 || read(fd, &buffer, 0) < 0)
+		return (NULL);
+	line = NULL;
+	// check if stash empty, if no, apend to line
+	if (stash)
+	{
+		line = ft_strjoin("", stash);
+		free(stash);
+		stash = NULL;
+		if (!line)
+			return (NULL);
+	}
+	//buffer
+	buffer = malloc(BUFFER_SIZE + 1);
+	if (!buffer)
+	{
+		if(!line)
+			free(line);
 		return (NULL);
 	}
-	stash = ft_substr(line, index_nextline + 1, (ft_strlen(line) - (index_nextline + 1)));
-	line = ft_extract_dup(line, index_nextline);
+	// concat in line
+	line = ft_read_concat(fd, buffer, line);
 	if (!line)
 	{
-		free (line);
-		free (stash);
-		free (buffer);
+		free(buffer);
 		return (NULL);
 	}
+	// extract and save in stash
+	stash = ft_left(line);
+	//  extract and return line
+	line = ft_extract(line);
 	return (line);
 }
