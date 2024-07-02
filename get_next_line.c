@@ -6,7 +6,7 @@
 /*   By: aistierl <aistierl@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/28 16:59:20 by aistierl          #+#    #+#             */
-/*   Updated: 2024/07/01 19:58:12 by aistierl         ###   ########.fr       */
+/*   Updated: 2024/07/02 19:03:47 by aistierl         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,24 +16,20 @@ char	*ft_read_concat(int fd, char *buffer, char *line)
 {
 	char	*temp;
 	int		read_value;
-
+	
+	
 	read_value = 1;
 	while (read_value > 0)
 	{
 		read_value = read(fd, buffer, BUFFER_SIZE);
 		if (read_value < 0)
-		{
-			free(buffer);
-			free(line);
 			return (NULL);
-		}
-		buffer[read_value] = '\0';
 		if (read_value == 0)
 			break ;
+		buffer[read_value] = '\0';
 		temp = ft_strjoin(line, buffer);
 		if (!temp)
 		{
-			free(line);
 			free(buffer);
 			return (NULL);
 		}
@@ -59,7 +55,10 @@ char	*ft_left(char *line)
 	i++;
 	str = malloc(ft_strlen(line) - i + 1);
 	if (!str)
+	{
+		free(line);
 		return (NULL);
+	}
 	j = 0;
 	while (line && line[i + j] != '\0')
 	{
@@ -82,7 +81,10 @@ char	*ft_extract(char *line)
 		i++;
 	cropped = malloc(i + 2);
 	if (cropped == NULL)
+	{
+		free(line);
 		return (NULL);
+	}
 	i = 0;
 	while (line[i] != '\n' && line[i] != '\0')
 	{
@@ -107,6 +109,18 @@ char	*get_next_line(int fd)
 	if (fd < 0 || BUFFER_SIZE <= 0 || read(fd, &buffer, 0) < 0)
 		return (NULL);
 	line = NULL;
+	buffer = malloc(1);	
+	if (!buffer)
+	{
+		free(buffer);
+		if(!line)
+		{
+			free(line);
+			line = NULL;
+		}
+		return (NULL);
+	}
+	buffer[0] = '\0';
 	// check if stash empty, if no, apend to line
 	if (stash)
 	{
@@ -116,19 +130,11 @@ char	*get_next_line(int fd)
 		if (!line)
 			return (NULL);
 	}
-	//buffer
-	buffer = malloc(BUFFER_SIZE + 1);
-	if (!buffer)
-	{
-		if(!line)
-			free(line);
-		return (NULL);
-	}
 	// concat in line
 	line = ft_read_concat(fd, buffer, line);
 	if (!line)
 	{
-		free(buffer);
+		free (buffer);
 		return (NULL);
 	}
 	// extract and save in stash
