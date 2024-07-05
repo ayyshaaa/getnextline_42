@@ -6,7 +6,7 @@
 /*   By: aistierl <aistierl@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/28 16:59:20 by aistierl          #+#    #+#             */
-/*   Updated: 2024/07/04 18:47:01 by aistierl         ###   ########.fr       */
+/*   Updated: 2024/07/05 18:42:10 by aistierl         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,12 +61,15 @@ char	*ft_left(char *line)
 	while (line && line[i] != '\0')
 	{
 		if (line[i] == '\n')
+		{
+			i++;
 			break ;
+		}
 		i++;
 	}
 	if (!line || line[i] == '\0')
 		return (NULL);
-	str = malloc(ft_strlen(line) - i);
+	str = malloc(ft_strlen(line) - i + 1);
 	if (!str)
 	{
 		free(line);
@@ -74,12 +77,9 @@ char	*ft_left(char *line)
 		return (NULL);
 	}
 	j = 0;
-	i++;
-	while (line[i + j] != '\0')
-	{
-		str[j] = line[i + j];
-		j++;
-	}
+	// i++;
+	while (line[i] != '\0')
+		str[j++] = line[i++];
 	str[j] = '\0';
 	return (str);
 }
@@ -111,8 +111,7 @@ char	*ft_extract(char *line)
 		cropped[i] = '\n';
 		i++;
 	}
-	else
-		cropped[i] = '\0';
+	cropped[i] = '\0';
 	free(line);
 	return (cropped);
 }
@@ -126,16 +125,15 @@ char	*get_next_line(int fd)
 	if (fd < 0 || BUFFER_SIZE <= 0 || read(fd, &buffer, 0) < 0)
 		return (NULL);
 	line = NULL;
-	stash = NULL;
 	// check if stash empty, if no, apend to line
-	if (stash)
-	{
-		line = ft_strjoin(line, stash);
-		free(stash);
-		stash = NULL;
-		if (!line)
-			return (NULL);
-	}
+	// if (stash != NULL)
+	// {
+	line = ft_strjoin(line, stash);
+	// 	free(stash);
+	// 	stash = NULL;
+	if (!line)
+		return (NULL);
+	// }
 	// concat in line
 	line = ft_read_concat(fd, buffer, line);
 	if (!line)
