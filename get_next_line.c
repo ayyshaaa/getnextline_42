@@ -6,7 +6,7 @@
 /*   By: aistierl <aistierl@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/28 16:59:20 by aistierl          #+#    #+#             */
-/*   Updated: 2024/07/05 18:42:10 by aistierl         ###   ########.fr       */
+/*   Updated: 2024/07/06 20:35:53 by aistierl         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,8 +16,8 @@ char	*ft_read_concat(int fd, char *buffer, char *line)
 {
 	char	*temp;
 	int		read_value;
-	
-	buffer = malloc(sizeof(char) * (BUFFER_SIZE + 1));	
+
+	buffer = malloc(sizeof(char) * (BUFFER_SIZE + 1));
 	if (!buffer)
 	{
 		free(buffer);
@@ -30,6 +30,9 @@ char	*ft_read_concat(int fd, char *buffer, char *line)
 		if (read_value < 0)
 		{
 			free(buffer);
+			free(line);
+			line = NULL;
+			buffer = NULL;
 			return (NULL);
 		}
 		if (read_value == 0)
@@ -122,18 +125,17 @@ char	*get_next_line(int fd)
 	char		*line;
 	static char	*stash;
 
-	if (fd < 0 || BUFFER_SIZE <= 0 || read(fd, &buffer, 0) < 0)
+	if (fd < 0 || BUFFER_SIZE <= 0)
 		return (NULL);
 	line = NULL;
+	buffer = NULL;
 	// check if stash empty, if no, apend to line
-	// if (stash != NULL)
-	// {
-	line = ft_strjoin(line, stash);
-	// 	free(stash);
-	// 	stash = NULL;
-	if (!line)
-		return (NULL);
-	// }
+	if (stash != NULL)
+	{
+		line = ft_strjoin(line, stash);
+		free(stash);
+		stash = NULL;
+	}
 	// concat in line
 	line = ft_read_concat(fd, buffer, line);
 	if (!line)

@@ -6,7 +6,7 @@
 /*   By: aistierl <aistierl@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/21 16:22:41 by aistierl          #+#    #+#             */
-/*   Updated: 2024/07/01 19:58:17 by aistierl         ###   ########.fr       */
+/*   Updated: 2024/07/06 16:02:44 by aistierl         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 # define GET_NEXT_LINE_H
 
 # ifndef BUFFER_SIZE
-#  define BUFFER_SIZE 5
+#  define BUFFER_SIZE 10
 # endif
 
 # include <fcntl.h>
