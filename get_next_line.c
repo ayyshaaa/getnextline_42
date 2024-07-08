@@ -6,52 +6,47 @@
 /*   By: aistierl <aistierl@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/28 16:59:20 by aistierl          #+#    #+#             */
-/*   Updated: 2024/07/06 20:35:53 by aistierl         ###   ########.fr       */
+/*   Updated: 2024/07/08 18:24:46 by aistierl         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
 
+char	*ft_concat_free(char *line, char *adding)
+{
+	char	*temporary;
+
+	temporary = ft_strjoin(line, adding);
+	if (!temporary)
+		return (free(line), free(adding), NULL);
+	free(line);
+	line = temporary;
+	return (line);
+}
+
 char	*ft_read_concat(int fd, char *buffer, char *line)
 {
-	char	*temp;
-	int		read_value;
+	int	read_value;
 
 	buffer = malloc(sizeof(char) * (BUFFER_SIZE + 1));
 	if (!buffer)
-	{
-		free(buffer);
 		return (NULL);
-	}
 	read_value = 1;
 	while (read_value > 0)
 	{
 		read_value = read(fd, buffer, BUFFER_SIZE);
 		if (read_value < 0)
-		{
-			free(buffer);
-			free(line);
-			line = NULL;
-			buffer = NULL;
-			return (NULL);
-		}
+			return (free(buffer), free(line), NULL);
 		if (read_value == 0)
 			break ;
 		buffer[read_value] = '\0';
-		temp = ft_strjoin(line, buffer);
-		if (!temp)
-		{
-			free(buffer);
-			free(line);
+		line = ft_concat_free(line, buffer);
+		if (!line)
 			return (NULL);
-		}
-		free(line);
-		line = temp;
 		if (ft_strchr(line, 10))
 			break ;
 	}
-	free(buffer);
-	return (line);
+	return (free(buffer), line);
 }
 
 char	*ft_left(char *line)
@@ -74,13 +69,8 @@ char	*ft_left(char *line)
 		return (NULL);
 	str = malloc(ft_strlen(line) - i + 1);
 	if (!str)
-	{
-		free(line);
-		line = NULL;
-		return (NULL);
-	}
+		return (free(line), NULL);
 	j = 0;
-	// i++;
 	while (line[i] != '\0')
 		str[j++] = line[i++];
 	str[j] = '\0';
@@ -99,10 +89,7 @@ char	*ft_extract(char *line)
 		i++;
 	cropped = malloc(i + 2);
 	if (cropped == NULL)
-	{
-		free(line);
-		return (NULL);
-	}
+		return (free(line), NULL);
 	i = 0;
 	while (line[i] != '\n' && line[i] != '\0')
 	{
@@ -110,13 +97,9 @@ char	*ft_extract(char *line)
 		i++;
 	}
 	if (line[i] == '\n')
-	{
-		cropped[i] = '\n';
-		i++;
-	}
+		cropped[i++] = '\n';
 	cropped[i] = '\0';
-	free(line);
-	return (cropped);
+	return (free(line), cropped);
 }
 
 char	*get_next_line(int fd)
@@ -129,20 +112,18 @@ char	*get_next_line(int fd)
 		return (NULL);
 	line = NULL;
 	buffer = NULL;
-	// check if stash empty, if no, apend to line
 	if (stash != NULL)
 	{
-		line = ft_strjoin(line, stash);
+		line = ft_concat_free(line, stash);
+		if (!line)
+			return (NULL);
 		free(stash);
 		stash = NULL;
 	}
-	// concat in line
 	line = ft_read_concat(fd, buffer, line);
 	if (!line)
 		return (NULL);
-	// extract and save in stash
 	stash = ft_left(line);
-	//  extract and return line
 	line = ft_extract(line);
 	return (line);
 }
