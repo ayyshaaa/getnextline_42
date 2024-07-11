@@ -1,4 +1,3 @@
-a.out
 .vscode/
-*.o
-.get_next_line_trash.c
+.main.c
+.linetest.txt

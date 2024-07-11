@@ -6,7 +6,7 @@
 /*   By: aistierl <aistierl@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/28 16:59:20 by aistierl          #+#    #+#             */
-/*   Updated: 2024/07/08 18:24:46 by aistierl         ###   ########.fr       */
+/*   Updated: 2024/07/10 17:18:02 by aistierl         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,7 +49,7 @@ char	*ft_read_concat(int fd, char *buffer, char *line)
 	return (free(buffer), line);
 }
 
-char	*ft_left(char *line)
+char	*ft_left(char *line, char *stash)
 {
 	char			*str;
 	unsigned int	i;
@@ -69,7 +69,7 @@ char	*ft_left(char *line)
 		return (NULL);
 	str = malloc(ft_strlen(line) - i + 1);
 	if (!str)
-		return (free(line), NULL);
+		return (free(line), free(stash), NULL);
 	j = 0;
 	while (line[i] != '\0')
 		str[j++] = line[i++];
@@ -77,7 +77,7 @@ char	*ft_left(char *line)
 	return (str);
 }
 
-char	*ft_extract(char *line)
+char	*ft_extract(char *line, char *stash)
 {
 	char	*cropped;
 	int		i;
@@ -89,7 +89,7 @@ char	*ft_extract(char *line)
 		i++;
 	cropped = malloc(i + 2);
 	if (cropped == NULL)
-		return (free(line), NULL);
+		return (free(line), free(stash), NULL);
 	i = 0;
 	while (line[i] != '\n' && line[i] != '\0')
 	{
@@ -123,7 +123,7 @@ char	*get_next_line(int fd)
 	line = ft_read_concat(fd, buffer, line);
 	if (!line)
 		return (NULL);
-	stash = ft_left(line);
-	line = ft_extract(line);
+	stash = ft_left(line, stash);
+	line = ft_extract(line, stash);
 	return (line);
 }
